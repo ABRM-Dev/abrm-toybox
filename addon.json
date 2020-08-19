@@ -1,0 +1,12 @@
+{
+  "title": "Holmes Toybox",
+  "type": "weapon",
+  "tags": [
+    "fun"
+  ],
+  "ignore": [
+    ".git/*",
+    ".gitattributes",
+    "*.md"
+  ]
+}
