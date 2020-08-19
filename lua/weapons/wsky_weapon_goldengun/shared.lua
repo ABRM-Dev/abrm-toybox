@@ -6,8 +6,8 @@ SWEP.Category = "Holmes Toybox"
 SWEP.Spawnable = true
 
 SWEP.Primary.Ammo = "WskyGoldenGun"
-SWEP.Primary.ClipSize = 10
-SWEP.Primary.DefaultClip = 10
+SWEP.Primary.ClipSize = 1
+SWEP.Primary.DefaultClip = 1
 SWEP.Primary.Automatic = false
 
 SWEP.Secondary.Ammo = "none"
@@ -34,19 +34,35 @@ function SWEP:PrimaryAttack()
     local entity = tr.Entity
     local entityType = type(entity)
     if (SERVER && (entityType == 'NPC' or entityType == 'Player')) then
-      entity:KillSilent()
+
+      --[[ Create Ragdoll ]]
       local ragdoll = ents.Create("prop_ragdoll")
       ragdoll:SetModel(entity:GetModel())
       ragdoll:SetPos(entity:GetPos())
       ragdoll:Spawn()
-      -- ragdoll:SetColor(entity:GetColor())
+
+      --[[ Copy Pose info from entity to ragdoll ]]
+      for i = 0, entity:GetNumPoseParameters() - 1 do
+        local sPose = entity:GetPoseParameterName(i)
+        ragdoll:SetPoseParameter(sPose, entity:GetPoseParameter(sPose))
+      end
+
+      --[[ Kill/Remove Entity (depending on type) ]]
+      if (entityType == 'Player') then entity:KillSilent()
+      else entity:Remove() end
+
+      --[[ Set Golden ]]
       ragdoll:SetMaterial("models/player/shared/gold_player")
-      local ragdollPhysObj = ragdoll:GetPhysicsObject()
-      ragdollPhysObj:EnableMotion(false)
+
+      --[[ Freeze all bones ]]
+      local bones = ragdoll:GetPhysicsObjectCount()
+      for bone = 1, bones-1 do
+        ragdoll:GetPhysicsObjectNum(bone):EnableMotion(false)
+      end
+
     end
   end
 
   self.BaseClass.ShootEffects(self)
-
   self:GetOwner():FireBullets(bullet)
 end
