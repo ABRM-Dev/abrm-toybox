@@ -1,5 +1,4 @@
 hook.Add("Initialize", "WskyWeaponGoldenGunAmmo", function ()
-  print("======================= ADDED WSKY GOLDEN GUN AMMO")
   game.AddAmmoType({
     name = "WskyGoldenGun",
     dmgtype = DMG_BULLET,
@@ -10,8 +9,6 @@ hook.Add("Initialize", "WskyWeaponGoldenGunAmmo", function ()
     minsplash = 0,
     maxsplash = 0
   })
-
-  PrintTable(game.GetAmmoTypes())
 end)
 
 AddCSLuaFile("shared.lua")

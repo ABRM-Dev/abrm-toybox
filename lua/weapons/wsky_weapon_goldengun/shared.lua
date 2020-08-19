@@ -20,7 +20,10 @@ function SWEP:Initialize()
 end
 
 function SWEP:PrimaryAttack()
-  
+
+  --[[ If can't fire, do nowt ]]
+  if (!self:CanPrimaryAttack()) then return end
+
   local bullet = {}
   bullet.Num = 1
   bullet.Src = self:GetOwner():GetShootPos()
@@ -65,4 +68,10 @@ function SWEP:PrimaryAttack()
 
   self.BaseClass.ShootEffects(self)
   self:GetOwner():FireBullets(bullet)
+
+  self:TakePrimaryAmmo(1)
+
+  if (!self:HasAmmo()) then
+    self:GetOwner():DropWeapon(self)
+  end
 end
