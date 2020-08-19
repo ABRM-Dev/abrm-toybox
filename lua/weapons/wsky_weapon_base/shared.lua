@@ -12,7 +12,6 @@ SWEP.ViewModel = nil
 SWEP.WorldModel = nil
 
 function SWEP:Initialize()
-  self:SetHoldType("normal")
 end
 
 function SWEP:Think()
