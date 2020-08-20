@@ -9,12 +9,22 @@ SWEP.UseHands = true
 SWEP.ViewModel = "models/weapons/c_rpg.mdl"
 SWEP.WorldModel = "	models/weapons/w_rpg.mdl"
 
+SWEP.Primary.Cooldown = 0.25
+SWEP.Secondary.Cooldown = 0.75
 
-function SWEP:ShootEffects()
+SWEP.Primary.Sound = Sound("advmr_weapon_baby/woosh.mp3")
+SWEP.Secondary.Sound = Sound("advmr_weapon_baby/woosh2.mp3")
+
+
+function SWEP:ShootEffect(type)
 
     self:SendWeaponAnim( ACT_VM_PRIMARYATTACK )  -- View model animation
     self:GetOwner():SetAnimation( PLAYER_ATTACK1 )
-    self:EmitSound(self.ClassName .. "/woosh.mp3")
+    if (type == "primary") then
+        self:EmitSound(self.Primary.Sound)
+    elseif (type == "secondary") then
+        self:EmitSound(self.Secondary.Sound)
+    end
 
 end
 
@@ -55,8 +65,8 @@ function SWEP:PrimaryAttack()
 
     FireBaby(self)
 
-    self:ShootEffects()
-    self:SetNextPrimaryFire( CurTime() + 0.25 )
+    self:ShootEffect("primary")
+    self:SetNextPrimaryFire( CurTime() + self.Primary.Cooldown )
 
 end
 
@@ -74,10 +84,10 @@ function SWEP:SecondaryAttack()
         baby:SetColor(Burnt)
     end)
 
-    self:ShootEffects()
+    self:ShootEffect("secondary")
 
     
-    self:SetNextPrimaryFire( CurTime() + 0.25 )
+    self:SetNextSecondaryFire( CurTime() + self.Secondary.Cooldown )
     
 
 end
