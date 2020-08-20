@@ -18,38 +18,44 @@ function SWEP:ShootEffects()
 
 end
 
-function SWEP:PrimaryAttack()
+function FireBaby(weapon)
+    local ent = ents.Create( "prop_physics" )
+    if ( !IsValid( ent ) ) then return end
+    ent:SetModel( "models/props_c17/doll01.mdl" )
 
-    if ( CLIENT ) then return end
-    local Ent = ents.Create( "prop_physics" )
-    if ( !IsValid( Ent ) ) then return end
-    Ent:SetModel( "models/props_c17/doll01.mdl" )
+    ent:SetPos( weapon:GetOwner():EyePos() + (weapon:GetOwner():GetAimVector() * 25 ) )
+    ent:SetAngles( 
+        weapon:GetOwner():EyeAngles() )
+    ent:Spawn()
 
-    Ent:SetPos( self:GetOwner():EyePos() + (self:GetOwner():GetAimVector() * 25 ) )
-    Ent:SetAngles( 
-        self:GetOwner():EyeAngles() )
-    Ent:Spawn()
-
-    local phys = Ent:GetPhysicsObject()
-	if ( !IsValid( phys ) ) then ent:Remove() return end
-
+    local phys = ent:GetPhysicsObject()
+    if ( !IsValid( phys ) ) then ent:Remove() return end
+    
     local velocity = 
-    self:GetOwner():GetAimVector()
+    weapon:GetOwner():GetAimVector()
     velocity = velocity * 5000
     velocity = velocity + (VectorRand() * 10)
     phys:ApplyForceCenter( velocity )
 
     cleanup.Add( 
-        self:GetOwner(), "props", Ent )
+        weapon:GetOwner(), "props", ent )
 
     undo.Create( "Thrown_Baby" )
-        undo.AddEntity( Ent )
+        undo.AddEntity( ent )
         undo.SetPlayer( 
-            self:GetOwner() )
+            weapon:GetOwner() )
     undo.Finish()
 
-    self:ShootEffects()
+    return ent
+end
 
+function SWEP:PrimaryAttack()
+
+    if ( CLIENT ) then return end
+
+    FireBaby(self)
+
+    self:ShootEffects()
     self:SetNextPrimaryFire( CurTime() + 0.25 )
 
 end
@@ -58,41 +64,15 @@ end
 function SWEP:SecondaryAttack()
 
     if ( CLIENT ) then return end
-    local Ent = ents.Create( "prop_physics" )
-    if ( !IsValid( Ent ) ) then return end
-    Ent:SetModel( "models/props_c17/doll01.mdl" )
+
     local Burnt = Color( 0, 0, 0, 255 )
+    local baby = FireBaby(self)
 
-    Ent:SetPos( self:GetOwner():EyePos() + (self:GetOwner():GetAimVector() * 25 ) )
-    Ent:SetAngles( 
-        self:GetOwner():EyeAngles() )
-    Ent:Ignite(7.5)
+    baby:Ignite(7.5)
+
     timer.Simple(1, function ()
-        Ent:SetColor(Burnt)
+        baby:SetColor(Burnt)
     end)
- 
-    Ent:Spawn()
-    
-
-    local phys = Ent:GetPhysicsObject()
-    if ( !IsValid( phys ) ) then ent:Remove() return end
-
-
-    local velocity = 
-    self:GetOwner():GetAimVector()
-    velocity = velocity * 5000
-    velocity = velocity + (VectorRand() * 10)
-    phys:ApplyForceCenter( velocity )
-   
-
-    cleanup.Add( 
-        self:GetOwner(), "props", Ent )
-
-    undo.Create( "Thrown_Baby" )
-        undo.AddEntity( Ent )
-        undo.SetPlayer( 
-            self:GetOwner() )
-    undo.Finish()
 
     self:ShootEffects()
 
