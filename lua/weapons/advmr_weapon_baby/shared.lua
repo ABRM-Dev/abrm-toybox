@@ -7,7 +7,7 @@ SWEP.Spawnable = true
 
 SWEP.UseHands = true
 SWEP.ViewModel = "models/weapons/c_rpg.mdl"
-SWEP.WorldModel = "	models/weapons/w_rpg.mdl"
+SWEP.WorldModel = "models/weapons/w_rocket_launcher.mdl"
 
 SWEP.Primary.Cooldown = 0.25
 SWEP.Secondary.Cooldown = 0.75
@@ -15,6 +15,9 @@ SWEP.Secondary.Cooldown = 0.75
 SWEP.Primary.Sound = Sound("advmr_weapon_baby/woosh.mp3")
 SWEP.Secondary.Sound = Sound("advmr_weapon_baby/woosh2.mp3")
 
+function SWEP:Initialize()
+    self:SetHoldType("rpg")
+end
 
 function SWEP:ShootEffect(type)
 
