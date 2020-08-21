@@ -40,6 +40,10 @@ function FireBaby(weapon)
     ent:SetAngles( 
         weapon:GetOwner():EyeAngles() )
     ent:Spawn()
+    timer.Simple(10, function ()
+        ent:Remove()
+    end)
+
 
     local phys = ent:GetPhysicsObject()
     if ( !IsValid( phys ) ) then ent:Remove() return end
