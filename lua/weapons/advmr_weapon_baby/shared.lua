@@ -1,48 +1,79 @@
+
 SWEP.PrintName = "Babyinator"
 SWEP.Author = "AdventurousMR"
 SWEP.Category = "Holmes Toybox"
 
 SWEP.Spawnable = true
 
+SWEP.UseHands = true
+SWEP.ViewModel = "models/weapons/c_rpg.mdl"
+SWEP.WorldModel = "models/weapons/w_rocket_launcher.mdl"
+
+SWEP.Primary.Cooldown = 0.25
+SWEP.Secondary.Cooldown = 0.75
+
+SWEP.Primary.Sound = Sound("advmr_weapon_baby/woosh.mp3")
+SWEP.Secondary.Sound = Sound("advmr_weapon_baby/woosh2.mp3")
+
 function SWEP:Initialize()
+    self:SetHoldType("rpg")
 end
 
-SWEP.ViewModel = "models/weapons/v_IRifle.mdl"
-SWEP.WorldModel = "	models/weapons/w_IRifle.mdl"
+function SWEP:ShootEffect(type)
 
-function SWEP:PrimaryAttack()
+    self:SendWeaponAnim( ACT_VM_PRIMARYATTACK )  -- View model animation
+    self:GetOwner():SetAnimation( PLAYER_ATTACK1 )
+    if (type == "primary") then
+        self:EmitSound(self.Primary.Sound)
+    elseif (type == "secondary") then
+        self:EmitSound(self.Secondary.Sound)
+    end
 
-    if ( CLIENT ) then return end
-    local Ent = ents.Create( "prop_physics" )
-    if ( !IsValid( Ent ) ) then return end
-    Ent:SetModel( "models/props_c17/doll01.mdl" )
+end
 
-    Ent:SetPos( self:GetOwner():EyePos() + (self:GetOwner():GetAimVector() * 1 ) )
-    Ent:SetAngles( 
-        self:GetOwner():EyeAngles() )
-    Ent:Spawn()
+function FireBaby(weapon)
+    local ent = ents.Create( "prop_physics" )
+    if ( !IsValid( ent ) ) then return end
+    ent:SetModel( "models/props_c17/doll01.mdl" )
 
-    local phys = Ent:GetPhysicsObject()
-	if ( !IsValid( phys ) ) then ent:Remove() return end
+    ent:SetPos( weapon:GetOwner():EyePos() + (weapon:GetOwner():GetAimVector() * 25 ) )
+    ent:SetAngles( 
+        weapon:GetOwner():EyeAngles() )
+    ent:Spawn()
+    timer.Simple(10, function ()
+        ent:Remove()
+    end)
 
+
+    local phys = ent:GetPhysicsObject()
+    if ( !IsValid( phys ) ) then ent:Remove() return end
+    
     local velocity = 
-    self:GetOwner():GetAimVector()
-    velocity = velocity * 1000
+    weapon:GetOwner():GetAimVector()
+    velocity = velocity * 5000
     velocity = velocity + (VectorRand() * 10)
     phys:ApplyForceCenter( velocity )
 
     cleanup.Add( 
-        self:GetOwner(), "props", Ent )
+        weapon:GetOwner(), "props", ent )
 
     undo.Create( "Thrown_Baby" )
-        undo.AddEntity( Ent )
+        undo.AddEntity( ent )
         undo.SetPlayer( 
-            self:GetOwner() )
+            weapon:GetOwner() )
     undo.Finish()
 
-    self.BaseClass.ShootEffects(self)
+    return ent
+end
 
-    self:SetNextPrimaryFire( CurTime() + 0.25 )
+function SWEP:PrimaryAttack()
+
+    if ( CLIENT ) then return end
+
+    FireBaby(self)
+
+    self:ShootEffect("primary")
+    self:SetNextPrimaryFire( CurTime() + self.Primary.Cooldown )
 
 end
 
@@ -50,37 +81,20 @@ end
 function SWEP:SecondaryAttack()
 
     if ( CLIENT ) then return end
-    local Ent = ents.Create( "prop_physics" )
-    if ( !IsValid( Ent ) ) then return end
-    Ent:SetModel( "models/props_c17/doll01.mdl" )
 
-    Ent:SetPos( self:GetOwner():EyePos() + (self:GetOwner():GetAimVector() * 1 ) )
-    Ent:SetAngles( 
-        self:GetOwner():EyeAngles() )
-    Ent:Spawn()
+    local Burnt = Color( 0, 0, 0, 255 )
+    local baby = FireBaby(self)
 
-    local phys = Ent:GetPhysicsObject()
-	if ( !IsValid( phys ) ) then ent:Remove() return end
+    baby:Ignite(7.5)
 
-    local velocity = 
-    self:GetOwner():GetAimVector()
-    velocity = velocity * 5000
-    velocity = velocity + (VectorRand() * 10)
-    phys:ApplyForceCenter( velocity )
+    timer.Simple(1, function ()
+        baby:SetColor(Burnt)
+    end)
 
-    cleanup.Add( 
-        self:GetOwner(), "props", Ent )
-
-    undo.Create( "Thrown_Baby" )
-        undo.AddEntity( Ent )
-        undo.SetPlayer( 
-            self:GetOwner() )
-    undo.Finish()
-
-    self.BaseClass.ShootEffects(self)
+    self:ShootEffect("secondary")
 
     
-    self:SetNextPrimaryFire( CurTime() + 0.25 )
+    self:SetNextSecondaryFire( CurTime() + self.Secondary.Cooldown )
     
 
 end
