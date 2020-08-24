@@ -3,8 +3,6 @@ local possibleRagdollMaterials = {
   "models/player/shared/gold_player"
 }
 
-print("testing!")
-
 function turnEntityToGold(entity)
   --[[ Create Ragdoll ]]
   local ragdoll = ents.Create("prop_ragdoll")
@@ -13,10 +11,19 @@ function turnEntityToGold(entity)
   ragdoll:SetRenderMode( RENDERMODE_TRANSCOLOR )
   ragdoll:Spawn()
 
-  --[[ Copy Pose info from entity to ragdoll ]]
-  for i = 0, entity:GetNumPoseParameters() - 1 do
-    local sPose = entity:GetPoseParameterName(i)
-    ragdoll:SetPoseParameter(sPose, entity:GetPoseParameter(sPose))
+  print(entity:GetModel())
+
+  -- [[ Weld bones together ]]
+  local bones = ragdoll:GetPhysicsObjectCount()
+  if (bones >= 2) then
+    for bone = 1, bones do
+      local constraint = constraint.Weld(ragdoll, ragdoll, 0, bone, 0)
+    local effectdata = EffectData()
+      effectdata:SetOrigin( ragdoll:GetBonePosition(bone) )
+      effectdata:SetScale( 1 )
+      effectdata:SetMagnitude( 1 )
+    util.Effect( "Sparks", effectdata, true, true )
+    end
   end
 
   --[[ Kill/Remove Entity (depending on type) ]]
@@ -25,12 +32,6 @@ function turnEntityToGold(entity)
 
   --[[ Set Golden ]]
   ragdoll:SetMaterial(possibleRagdollMaterials[math.random(1, table.Count(possibleRagdollMaterials))])
-
-  --[[ Freeze all bones ]]
-  local bones = ragdoll:GetPhysicsObjectCount()
-  for bone = 1, bones-1 do
-    ragdoll:GetPhysicsObjectNum(bone):EnableMotion(false)
-  end
 
   --[[ Start a timer to fade away the ragdoll ]]
   timer.Create("WskyGoldenGunRagdollFading" .. ragdoll:GetCreationID(), 5, 1, function ()
