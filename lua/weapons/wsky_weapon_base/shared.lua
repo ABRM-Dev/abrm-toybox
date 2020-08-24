@@ -4,7 +4,7 @@ SWEP.Contact = "dev@whiskee.me"
 SWEP.Purpose		= ""
 SWEP.Instructions	= ""
 
-SWEP.Category = "Whiskee Toybox"
+SWEP.Category = sharedCategoryName
 
 SWEP.Spawnable = false
 

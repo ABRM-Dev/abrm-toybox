@@ -1,7 +1,7 @@
 
 SWEP.PrintName = "Babyinator"
 SWEP.Author = "AdventurousMR"
-SWEP.Category = "Holmes Toybox"
+SWEP.Category = sharedCategoryName
 
 SWEP.Spawnable = true
 

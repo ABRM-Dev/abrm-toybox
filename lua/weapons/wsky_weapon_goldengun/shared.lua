@@ -1,7 +1,7 @@
 DEFINE_BASECLASS("wsky_weapon_base")
 
 SWEP.PrintName = "Golden Gun"
-SWEP.Category = "Holmes Toybox"
+SWEP.Category = sharedCategoryName
 
 SWEP.Spawnable = true
 
