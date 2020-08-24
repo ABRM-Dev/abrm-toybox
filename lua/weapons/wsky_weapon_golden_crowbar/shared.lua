@@ -14,10 +14,13 @@ SWEP.Secondary.Ammo = "none"
 
 modelMaterial = "models/player/shared/gold_player"
 
-function SWEP:ShootEffect()
-  print("ACT_VM_SWINGHARD")
-  self:SendWeaponAnim( ACT_VM_HITCENTER )  -- View model animation
+function SWEP:ShootEffect(hit)
   self:GetOwner():SetAnimation( PLAYER_ATTACK1 )
+  if (hit) then
+    self:SendWeaponAnim( ACT_VM_HITCENTER )
+  else
+    self:SendWeaponAnim( ACT_VM_MISSCENTER )
+  end
 end
 
 function SWEP:Initialize()
@@ -25,11 +28,17 @@ function SWEP:Initialize()
   self:SetMaterial(modelMaterial)
 end
 
-function SWEP:PreDrawViewModel(vm, weapon, ply)
-  vm:SetMaterial(modelMaterial)
-end
-
 function SWEP:PrimaryAttack()
-  self:ShootEffect()
   self:EmitSound(self.ClassName .. "/attack1.mp3", 75)
+
+  local trace = self:GetOwner():GetEyeTraceNoCursor()
+  local entity, entityType = trace.Entity, type(trace.Entity)
+  if ((trace.Fraction * 100) <= 0.15) then
+    self:ShootEffect(true)
+    if (entityType == 'Player' or entityType == 'NPC') then
+      turnEntityToGold(entity)
+    end
+  else
+    self:ShootEffect()
+  end
 end
