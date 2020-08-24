@@ -29,7 +29,7 @@ function SWEP:Initialize()
 end
 
 function SWEP:PrimaryAttack()
-  self:EmitSound(self.ClassName .. "/attack1.mp3", 75)
+  self:EmitSound("weapons/iceaxe/iceaxe_swing1.wav")
 
   local trace = self:GetOwner():GetEyeTraceNoCursor()
   local entity, entityType = trace.Entity, type(trace.Entity)

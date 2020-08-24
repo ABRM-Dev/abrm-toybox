@@ -26,6 +26,8 @@ function turnEntityToGold(entity)
     end
   end
 
+  ragdoll:EmitSound("physics/glass/glass_impact_bullet" .. math.random(1, 4) .. ".wav")
+
   --[[ Kill/Remove Entity (depending on type) ]]
   if (type(entity) == 'Player') then entity:KillSilent()
   else entity:Remove() end
