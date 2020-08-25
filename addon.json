@@ -7,6 +7,7 @@
   "ignore": [
     ".git/*",
     ".gitattributes",
-    "*.md"
+    "*.md",
+    ".vendor/*"
   ]
 }
