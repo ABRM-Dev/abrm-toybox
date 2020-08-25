@@ -31,5 +31,12 @@ jobs:
       run: .vendor/gmad.exe create -folder . -out abrm-toybox.gma
       
     # Runs a command to update the workshop addon
-    - name: Update workshop addon
-      run: .vendor/gmpublish.exe update -id 2208941058 -icon addon-icon.jpg -addon abrm-toybox.gma -changes "${{ github.sha }}"
+    #- name: Update workshop addon
+    #  run: .vendor/gmpublish.exe update -id 2208941058 -icon addon-icon.jpg -addon abrm-toybox.gma -changes "${{ github.sha }}"
+    
+    # Create a release
+    - name: Create Release
+      uses: actions/create-release@v1
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
