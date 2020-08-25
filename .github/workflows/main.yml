@@ -20,7 +20,7 @@ jobs:
 
     - name: Get Current Date
       id: date
-      run: echo "::set-output name=date::$(date +'%Y-%m-%d %H:%M:%S')"
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d|%H:%M:%S')"
 
     # - name: Download dependencies
     #   run: sudo apt-get install libsdl2-2.0-0
