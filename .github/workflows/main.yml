@@ -18,8 +18,8 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
 
-    - name: Download dependencies
-      run: sudo apt-get install libsdl2-2.0-0
+    # - name: Download dependencies
+    #   run: sudo apt-get install libsdl2-2.0-0
 
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
@@ -33,11 +33,11 @@ jobs:
       run: .vendor/gmad create -folder . -out abrm-toybox.gma
       
     # Runs a command to update the workshop addon
-    - name: Update workshop addon
-      env:
-        STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
-        GMODWS_DEBUG: true
-      run: .vendor/gmodws whiskeealt 2208941058 abrm-toybox.gma "${{ github.sha }}"
+    # - name: Update workshop addon
+    #   env:
+    #     STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
+    #     GMODWS_DEBUG: true
+    #   run: .vendor/gmodws whiskeealt 2208941058 abrm-toybox.gma "${{ github.sha }}"
     
     # Create a release
     - name: Create Release
