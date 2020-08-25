@@ -22,7 +22,7 @@ jobs:
 
     # Runs a command to create the addon file
     - name: Create addon file
-      run: .vendor/gmad create -folder . -out abrm-toybox.gma
+      run: sudo .vendor/gmad create -folder . -out abrm-toybox.gma
       
     # Runs a command to update the workshop addon
     - name: Update workshop addon
