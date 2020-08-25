@@ -36,6 +36,7 @@ jobs:
     - name: Update workshop addon
       env:
         STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
+        GMODWS_DEBUG: true
       run: .vendor/gmodws whiskeealt 2208941058 abrm-toybox.gma "${{ github.sha }}"
     
     # Create a release
