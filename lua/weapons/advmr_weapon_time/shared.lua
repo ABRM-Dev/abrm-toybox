@@ -1,6 +1,6 @@
-SWEP.PrintName = "TIME RIFLE"
+SWEP.PrintName = "Time Rifle"
 SWEP.Author = "AdventurousMR"
-SWEP.Category = "Holmes Toybox"
+SWEP.Category = sharedCategoryName
 
 SWEP.Spawnable = true
 
@@ -65,6 +65,9 @@ end
 
 function SWEP:Reload()
 
+    local ReloadSound = Sound("advmr_weapon_time/Reload.mp3")
+
+    self:EmitSound(ReloadSound)
     game.SetTimeScale(1)
 
 end
