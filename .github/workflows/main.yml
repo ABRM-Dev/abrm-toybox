@@ -18,9 +18,9 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
 
-      - name: Get Current Date
-        id: date
-        run: echo "::set-output name=date::$(date + '%Y-%m-%dT%H:%M:%S')"
+    - name: Get Current Date
+      id: date
+      run: echo "::set-output name=date::$(date + '%Y-%m-%dT%H:%M:%S')"
 
     # - name: Download dependencies
     #   run: sudo apt-get install libsdl2-2.0-0
