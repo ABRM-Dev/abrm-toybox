@@ -9,6 +9,10 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  workflow_dispatch:
+    sha:
+      required: true
+      default: 'Manual Dispatch'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -22,6 +26,10 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    # Runs a single command using the runners shell
+    # Runs a command to create the addon file
     - name: Create addon file
-      run: .vendor/gmad.exe create -folder "./abrm-toybox" -out abrm-toybox.gma
+      run: .vendor/gmad.exe create -folder . -out abrm-toybox.gma
+      
+    # Runs a command to update the workshop addon
+    - name: Update workshop addon
+      run: .vendor/gmpublish.exe update -id 2208941058 -icon addon-icon.jpg -addon abrm-toybox.gma -changes "${{ <expression> }}"
