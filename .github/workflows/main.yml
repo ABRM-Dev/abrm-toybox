@@ -20,9 +20,9 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    # Runs a command to adjust permission level of gmad
-    - name: Change perm of gmad
-      run: chmod u+x .vendor/gmad
+    # Runs a command to adjust permission level of vendor
+    - name: Chmod vendor
+      run: chmod -R u+x vendor
 
     # Runs a command to create the addon file
     - name: Create addon file
