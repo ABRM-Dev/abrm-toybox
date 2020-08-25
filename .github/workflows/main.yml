@@ -18,6 +18,10 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
 
+      - name: Get Current Date
+        id: date
+        run: echo "::set-output name=date::$(date + '%Y-%m-%dT%H:%M:%S')"
+
     # - name: Download dependencies
     #   run: sudo apt-get install libsdl2-2.0-0
 
@@ -46,8 +50,8 @@ jobs:
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.sha }}
-        release_name: ${{ github.head_ref }}
+        tag_name: ${{ steps.date.outputs.date }}
+        release_name: Release ${{ steps.date.outputs.date }}
 
     # Upload a release asset
     - name: Upload release asset
