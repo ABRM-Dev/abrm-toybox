@@ -20,9 +20,13 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
+    # Runs a command to adjust permission level of gmad
+    - name: Change perm of gmad
+      run: chmod u+x .vendor/gmad
+
     # Runs a command to create the addon file
     - name: Create addon file
-      run: sudo .vendor/gmad create -folder . -out abrm-toybox.gma
+      run: .vendor/gmad create -folder . -out abrm-toybox.gma
       
     # Runs a command to update the workshop addon
     - name: Update workshop addon
