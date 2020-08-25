@@ -11,6 +11,8 @@ SWEP.UseHands = true
 
 SWEP.Primary.Cooldown = 0.25
 SWEP.Secondary.Cooldown = 0.75
+SWEP.Primary.Automatic = true
+SWEP.Secondary.Automatic = true
 
 SWEP.Primary.Sound = Sound("advmr_weapon_baby/woosh.mp3")
 SWEP.Secondary.Sound = Sound("advmr_weapon_baby/woosh2.mp3")
@@ -58,5 +60,11 @@ function SWEP:SecondaryAttack()
     self:ShootEffect("secondary")
     self:SetNextSecondaryFire( CurTime() + 0.1)
     
+
+end
+
+function SWEP:Reload()
+
+    game.SetTimeScale(1)
 
 end
