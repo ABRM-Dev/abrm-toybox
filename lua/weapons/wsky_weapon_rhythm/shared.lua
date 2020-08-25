@@ -16,7 +16,14 @@ local visColor = Color(180, 0, 180, 150)
 local bgFade = 0
 local fadeDec = 0.0025
 
+local possibleSongs = {
+  "happy",
+  "qwerty",
+  "riddle",
+}
+
 if SERVER then
+  util.AddNetworkString( "WskyRhythmPlayerDropWeapon" )
   util.AddNetworkString( "WskyRhythmFreezePlayer" )
   util.AddNetworkString( "WskyRhythmUnfreezePlayer" )
 end
@@ -31,6 +38,13 @@ end)
 net.Receive ("WskyRhythmUnfreezePlayer", function (len, pl)
   local ply = net.ReadEntity()
   if (ply) then
+    ply:Freeze(false)
+  end
+end)
+net.Receive ("WskyRhythmPlayerDropWeapon", function (len, pl)
+  local ply = net.ReadEntity()
+  if (ply) then
+    ply:DropWeapon(ply:GetActiveWeapon())
     ply:Freeze(false)
   end
 end)
@@ -52,7 +66,7 @@ hook.Add("Tick", "WskyRhythmTick", function ()
     net.Start("WskyRhythmFreezePlayer")
       net.WriteEntity(player)
     net.SendToServer()
-    sound.PlayFile("sound/wsky_weapon_rhythm/Boss_1.mp3", "mono", function (source)
+    sound.PlayFile("sound/wsky_weapon_rhythm/" .. possibleSongs[math.random(1, table.Count(possibleSongs))] .. ".mp3", "mono", function (source)
       audioSource = source
     end)
     visColor = Color(math.random(100, 255), math.random(100, 255), math.random(100, 255), visColor.a)
@@ -65,10 +79,22 @@ hook.Add("Tick", "WskyRhythmTick", function ()
   end
 end)
 
+local hide = {
+	["CHudHealth"] = true,
+	["CHudBattery"] = true
+}
+
+hook.Add( "HUDShouldDraw", "HideHUD", function( name )
+	if ( hide[ name ] ) then
+		return false
+	end
+end )
+
 hook.Add("HUDPaint", "WskyRhythmHUD", function ()
   local audioLevels = {}
   local amp = ScrH()
-  draw.RoundedBox(0, 0, 0, ScrW(), ScrH(), Color(25, 25, 25, math.Clamp(bgFade * 240, 0, 255)))
+  local fovFractionClamp = 2
+  draw.RoundedBox(0, 0, 0, ScrW(), ScrH(), Color(25, 25, 25, math.Clamp(bgFade * 250, 0, 255)))
   if !audioSource then
     if (bgFade > 0) then
       bgFade = bgFade - fadeDec
@@ -76,13 +102,24 @@ hook.Add("HUDPaint", "WskyRhythmHUD", function ()
     LocalPlayer():SetFOV(100, 0)
     return
   end
+  if (audioSource:GetTime() == audioSource:GetLength()) then
+    LocalPlayer():SetNWBool("WskyRhythmPlay", false)
+    audioSource = nil
+    net.Start("WskyRhythmPlayerDropWeapon")
+      net.WriteEntity(LocalPlayer())
+    net.SendToServer()
+    return
+  end
+  local songName = string.upper(string.Explode(".", string.Explode("/", audioSource:GetFileName())[3])[1])
   local timeRemaining = math.floor(audioSource:GetLength() - audioSource:GetTime())
   local hour = math.Clamp(math.floor(timeRemaining / 3600), 0, 24)
   local minute = math.Clamp(math.floor((timeRemaining - (hour * 3600)) / 60), 0, 60)
   local seconds = math.Clamp(math.floor((timeRemaining - (hour * 3600) - (minute * 60))), 0, 60)
   local timePrint = (hour .. ":" .. minute .. ":" .. seconds)
   local w, h = surface.GetTextSize(timePrint)
-  draw.DrawText(timePrint, "DermaLarge", (ScrW() / 2) - (w / 2), 16, Color(255,255,255,255), TEXT_ALIGN_CENTER)
+  draw.DrawText(timePrint, "DermaLarge", (ScrW() / 2) - (w / 2), 48, Color(255,255,255,255), TEXT_ALIGN_LEFT)
+  w, h = surface.GetTextSize(songName)
+  draw.DrawText(songName, "DermaLarge", (ScrW() / 2) - (w / 2), 16, Color(255,255,255,255), TEXT_ALIGN_LEFT)
   if (bgFade < 1) then
     bgFade = bgFade + fadeDec
   end
@@ -98,14 +135,14 @@ hook.Add("HUDPaint", "WskyRhythmHUD", function ()
     smoothLevels[i] = 0
   end
   for i=1, total do
-    if (i <= total / 4) then
+    if (i <= total / fovFractionClamp) then
       count = count + audioLevels[i] * amp
     end
     smoothLevels[i] = Lerp(500 * FrameTime(), smoothLevels[i], audioLevels[i])
     local y = (ScrH() / 2) - (((smoothLevels[i] * amp) + 1) / 2)
     draw.RoundedBox(0, (i-1) * levelWidth, y, levelWidth, smoothLevels[i] * amp, visColor)
   end
-  local mult = math.Clamp((count / (total / 4)) / 10, .5, 5)
+  local mult = math.Clamp((count / (total / fovFractionClamp)) / 10, .5, 5)
 
-  LocalPlayer():SetFOV(math.max(80, 100 * (mult / 3)), 0.25)
+  LocalPlayer():SetFOV(math.max(0, 100 * (mult / 3)), 0.25)
 end)
