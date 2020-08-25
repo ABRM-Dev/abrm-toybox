@@ -22,7 +22,7 @@ jobs:
 
     # Runs a command to adjust permission level of vendor
     - name: Chmod vendor
-      run: chmod -R u+x vendor
+      run: chmod -R u+x .vendor
 
     # Runs a command to create the addon file
     - name: Create addon file
