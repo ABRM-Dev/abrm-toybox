@@ -5,9 +5,11 @@ name: CI
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
-  create:
-    tags:
-      - '*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag number to use'
+        required: true
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -19,13 +21,6 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
 
-    - name: Get Current Date
-      id: date
-      run: echo "::set-output name=date::$(date +'%Y-%m-%d|%H-%M-%S')"
-
-    # - name: Download dependencies
-    #   run: sudo apt-get install libsdl2-2.0-0
-
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
@@ -36,14 +31,7 @@ jobs:
     # Runs a command to create the addon file
     - name: Create addon file
       run: .vendor/gmad create -folder . -out abrm-toybox.gma
-      
-    # Runs a command to update the workshop addon
-    # - name: Update workshop addon
-    #   env:
-    #     STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
-    #     GMODWS_DEBUG: true
-    #   run: .vendor/gmodws whiskeealt 2208941058 abrm-toybox.gma "${{ github.sha }}"
-    
+
     # Create a release
     - name: Create Release
       id: create_release
@@ -51,8 +39,8 @@ jobs:
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ steps.date.outputs.date }}
-        release_name: Release ${{ steps.date.outputs.date }}
+        tag_name: ${{ github.event.inputs.tag }}
+        release_name: Release ${{ github.event.inputs.tag }}
 
     # Upload a release asset
     - name: Upload release asset
