@@ -32,4 +32,4 @@ jobs:
       
     # Runs a command to update the workshop addon
     - name: Update workshop addon
-      run: .vendor/gmpublish.exe update -id 2208941058 -icon addon-icon.jpg -addon abrm-toybox.gma -changes "${{ <expression> }}"
+      run: .vendor/gmpublish.exe update -id 2208941058 -icon addon-icon.jpg -addon abrm-toybox.gma -changes "${{ github.sha }}"
