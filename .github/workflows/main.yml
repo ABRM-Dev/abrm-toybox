@@ -13,14 +13,14 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
 
     - name: Get Current Date
       id: date
-      run: echo "::set-output name=date::$(date + '%Y-%m-%dT%H:%M:%S')"
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d %H:%M:%S')"
 
     # - name: Download dependencies
     #   run: sudo apt-get install libsdl2-2.0-0
