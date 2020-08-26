@@ -14,12 +14,40 @@ local deployed = false
 local timeMult = nil
 local visColor = Color(180, 0, 180, 150)
 local bgFade = 0
-local fadeDec = 0.0025
+local fadeDec = 0.01
+local songPlaying = nil
 
 local possibleSongs = {
-  "happy",
-  "qwerty",
-  "riddle",
+  {
+    name = "Duck Face",
+    author = "Code",
+    file = "Duck Face - Code.mp3"
+  },
+  {
+    name = "Happy",
+    author = "Rob Gasser",
+    file = "Happy - Rob Gasser.mp3"
+  },
+  {
+    name = "Future",
+    author = "Por Favore",
+    file = "Future - Por Favore.mp3"
+  },
+  {
+    name = "Know You",
+    author = "Notes",
+    file = "Know You - Notes.mp3"
+  },
+  {
+    name = "Shadow",
+    author = "F1NG3RS",
+    file = "Shadow - Fingers.mp3"
+  },
+  {
+    name = "Spy",
+    author = "Raky",
+    file = "Spy - Raky.mp3"
+  },
 }
 
 if SERVER then
@@ -63,12 +91,14 @@ hook.Add("Tick", "WskyRhythmTick", function ()
   if SERVER then return end
   local player = LocalPlayer()
   if (player:GetNWBool("WskyRhythmPlay") && player:GetActiveWeapon():GetClass() == 'wsky_weapon_rhythm'  && !audioSource) then
+    songPlaying = possibleSongs[math.random(1, table.Count(possibleSongs))]
+    sound.PlayFile("sound/wsky_weapon_rhythm/" .. songPlaying.file, "mono", function (source)
+      audioSource = source
+      source:SetVolume(0.25)
+    end)
     net.Start("WskyRhythmFreezePlayer")
       net.WriteEntity(player)
     net.SendToServer()
-    sound.PlayFile("sound/wsky_weapon_rhythm/" .. possibleSongs[math.random(1, table.Count(possibleSongs))] .. ".mp3", "mono", function (source)
-      audioSource = source
-    end)
     visColor = Color(math.random(100, 255), math.random(100, 255), math.random(100, 255), visColor.a)
   elseif (!player:GetNWBool("WskyRhythmPlay") && audioSource) then
     net.Start("WskyRhythmUnfreezePlayer")
@@ -76,6 +106,16 @@ hook.Add("Tick", "WskyRhythmTick", function ()
     net.SendToServer()
     audioSource:Stop()
     audioSource = nil
+  end
+
+  if (audioSource) then
+    if (bgFade < 1) then
+      bgFade = bgFade + fadeDec
+    end
+  else
+    if (bgFade > 0) then
+      bgFade = bgFade - fadeDec
+    end
   end
 end)
 
@@ -96,9 +136,6 @@ hook.Add("HUDPaint", "WskyRhythmHUD", function ()
   local fovFractionClamp = 2
   draw.RoundedBox(0, 0, 0, ScrW(), ScrH(), Color(25, 25, 25, math.Clamp(bgFade * 250, 0, 255)))
   if !audioSource then
-    if (bgFade > 0) then
-      bgFade = bgFade - fadeDec
-    end
     LocalPlayer():SetFOV(100, 0)
     return
   end
@@ -110,19 +147,23 @@ hook.Add("HUDPaint", "WskyRhythmHUD", function ()
     net.SendToServer()
     return
   end
-  local songName = string.upper(string.Explode(".", string.Explode("/", audioSource:GetFileName())[3])[1])
   local timeRemaining = math.floor(audioSource:GetLength() - audioSource:GetTime())
   local hour = math.Clamp(math.floor(timeRemaining / 3600), 0, 24)
   local minute = math.Clamp(math.floor((timeRemaining - (hour * 3600)) / 60), 0, 60)
   local seconds = math.Clamp(math.floor((timeRemaining - (hour * 3600) - (minute * 60))), 0, 60)
   local timePrint = (hour .. ":" .. minute .. ":" .. seconds)
+
+  surface.SetFont("DermaLarge")
+  local w, h = surface.GetTextSize(songPlaying.name)
+  draw.DrawText(songPlaying.name, "DermaLarge", (ScrW() / 2) - (w / 2), 16, Color(255,255,255,255), TEXT_ALIGN_LEFT)
+
   local w, h = surface.GetTextSize(timePrint)
-  draw.DrawText(timePrint, "DermaLarge", (ScrW() / 2) - (w / 2), 48, Color(255,255,255,255), TEXT_ALIGN_LEFT)
-  w, h = surface.GetTextSize(songName)
-  draw.DrawText(songName, "DermaLarge", (ScrW() / 2) - (w / 2), 16, Color(255,255,255,255), TEXT_ALIGN_LEFT)
-  if (bgFade < 1) then
-    bgFade = bgFade + fadeDec
-  end
+  draw.DrawText(timePrint, "DermaLarge", (ScrW() / 2) - (w / 2), 80, Color(255,255,255,255), TEXT_ALIGN_LEFT)
+
+  surface.SetFont("DermaDefaultBold")
+  local w, h = surface.GetTextSize(songPlaying.author)
+  draw.DrawText(songPlaying.author, "DermaDefaultBold", (ScrW() / 2) - (w / 2), 48, Color(255,255,255,255), TEXT_ALIGN_LEFT)
+
   audioSource:FFT(audioLevels, 4)
 
   draw.RoundedBox(0, 0, (ScrH() / 2) - 2, ScrW(), 1, ColorAlpha(visColor, 180))
