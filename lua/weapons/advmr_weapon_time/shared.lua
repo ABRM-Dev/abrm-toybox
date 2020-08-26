@@ -14,8 +14,8 @@ SWEP.Secondary.Cooldown = 0.75
 SWEP.Primary.Automatic = true
 SWEP.Secondary.Automatic = true
 
-SWEP.Primary.Sound = Sound("advmr_weapon_baby/woosh.mp3")
-SWEP.Secondary.Sound = Sound("advmr_weapon_baby/woosh2.mp3")
+SWEP.Primary.Sound = Sound("advmr_weapon_time/shoot2.mp3")
+SWEP.Secondary.Sound = Sound("advmr_weapon_time/shoot2.mp3")
 
 function SWEP:Initialize()
     self:SetHoldType("rpg")
