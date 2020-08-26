@@ -92,9 +92,15 @@ hook.Add("Tick", "WskyRhythmTick", function ()
   local player = LocalPlayer()
   if (player:GetNWBool("WskyRhythmPlay") && player:GetActiveWeapon():GetClass() == 'wsky_weapon_rhythm'  && !audioSource) then
     songPlaying = possibleSongs[math.random(1, table.Count(possibleSongs))]
-    sound.PlayFile("sound/wsky_weapon_rhythm/" .. songPlaying.file, "mono", function (source)
+    sound.PlayFile("sound/wsky_weapon_rhythm/" .. songPlaying.file, "mono", function (source, err, errname)
+      if (err) then
+        print(err, errname)
+        net.Start("WskyRhythmPlayerDropWeapon")
+          net.WriteEntity(player)
+        net.SendToServer()
+      end
       audioSource = source
-      source:SetVolume(0.25)
+      timer.Simple(0.05, function () audioSource:SetVolume(0.25) end)
     end)
     net.Start("WskyRhythmFreezePlayer")
       net.WriteEntity(player)
@@ -133,7 +139,7 @@ end )
 hook.Add("HUDPaint", "WskyRhythmHUD", function ()
   local audioLevels = {}
   local amp = ScrH()
-  local fovFractionClamp = 2
+  local fovFractionClamp = 1
   draw.RoundedBox(0, 0, 0, ScrW(), ScrH(), Color(25, 25, 25, math.Clamp(bgFade * 250, 0, 255)))
   if !audioSource then
     LocalPlayer():SetFOV(100, 0)
@@ -183,7 +189,7 @@ hook.Add("HUDPaint", "WskyRhythmHUD", function ()
     local y = (ScrH() / 2) - (((smoothLevels[i] * amp) + 1) / 2)
     draw.RoundedBox(0, (i-1) * levelWidth, y, levelWidth, smoothLevels[i] * amp, visColor)
   end
-  local mult = math.Clamp((count / (total / fovFractionClamp)) / 10, .5, 5)
+  local mult = (count / (total / fovFractionClamp)) / 10
 
-  LocalPlayer():SetFOV(math.max(0, 100 * (mult / 3)), 0.25)
+  LocalPlayer():SetFOV(60 + math.Clamp(mult * 40, 0, 60), 0.10)
 end)
