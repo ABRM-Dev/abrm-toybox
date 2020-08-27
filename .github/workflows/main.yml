@@ -53,3 +53,16 @@ jobs:
           asset_path: ./abrm-toybox.gma
           asset_name: abrm-toybox.gma
           asset_content_type: application/octet-stream
+          
+    - name: Send email
+      uses: dawidd6/action-send-mail@v2.2.0
+      with:
+        server_address: email-smtp.eu-west-2.amazonaws.com
+        server_port: 465
+        username: ${{secrets.MAIL_USERNAME}}
+        password: ${{secrets.MAIL_PASSWORD}}
+        subject: Github Actions job result
+        # Literal body:
+        body: Build job of ${{github.repository}} completed successfully!\ngmpublish.lnk update -id 2208941058 -addon
+        to: dev@abrm.uk
+        from: dev@abrm.uk
