@@ -1,8 +1,8 @@
 ENT.Type = "anim"
 ENT.Base = "base_gmodentity"
 
-ENT.PrintName = "ABRM Toybox"
-ENT.Category = "AdventurousMR's Props"
+ENT.PrintName = "KaBoom Baby"
+ENT.Category = "ABRM Toybox"
 
 ENT.Spawnable = true
 
