@@ -65,4 +65,4 @@ jobs:
         # Literal body:
         body: Build job of ${{github.repository}} completed successfully!\ngmpublish.lnk update -id 2208941058 -addon
         to: dev@abrm.uk
-        from: dev@abrm.uk
+        from: ABRM-Dev Github # <dev@abrm.uk>
