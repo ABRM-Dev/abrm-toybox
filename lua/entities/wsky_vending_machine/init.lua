@@ -6,7 +6,7 @@ include('shared.lua')
 util.AddNetworkString("wsky_vending_machine_openmenu")
 
 function ENT:Initialize()
-  self:SetPos(self:GetPos() + Vector(0, 0, 250))
+  self:SetPos(self:GetPos() + Vector(0, 0, 40))
   self:SetModel("models/wsky_vending_machine/wsky_vending_machine.mdl")
   self:PhysicsInit(SOLID_VPHYSICS)
   self:SetMoveType(MOVETYPE_VPHYSICS)
