@@ -20,7 +20,7 @@ end
 function ENT:Use ( activator, caller, useType, value )
   if (activator:IsPlayer()) then
     net.Start("wsky_vending_machine_openmenu")
-      net.WriteEntity(self)
+      net.WriteFloat(self:EntIndex())
     net.Send(activator)
   end
 end

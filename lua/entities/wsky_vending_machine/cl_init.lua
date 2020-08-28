@@ -8,7 +8,18 @@ end
 
 net.Receive("wsky_vending_machine_openmenu", function (len, pl)
   if (len) then
-    local vm = net.ReadEntity()
-    print(vm)
+    local vmIndex = net.ReadFloat()
+    local vm = nil
+    if vmIndex then vm = Entity(vmIndex) end
+    if (vm && vm:IsValid()) then
+      local Frame = vgui.Create( "DFrame" )
+      Frame:SetSize(ScrW() / 2, ScrH() / 2)
+      Frame:SetVisible(true)
+      Frame:SetDraggable(false)
+      Frame:ShowCloseButton(true)
+      Frame:MakePopup()
+      Frame:Center()
+      Frame:SetTitle("View window for vending machine number: #" .. vmIndex)
+    end
   end
 end)
